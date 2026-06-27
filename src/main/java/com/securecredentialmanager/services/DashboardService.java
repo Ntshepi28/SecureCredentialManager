@@ -1,4 +1,4 @@
 package com.securecredentialmanager.services;
 
-public class PasswordService {
+public class DashboardService {
 }
