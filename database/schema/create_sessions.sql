@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS sessions(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    session_token VARCHAR(255) NOT NULL UNIQUE,
+    device_name VARCHAR(255),
+    ip_address VARCHAR(45),
+    login_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_activity TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    CONSTRAINT fk_sessions_user
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE
+    );

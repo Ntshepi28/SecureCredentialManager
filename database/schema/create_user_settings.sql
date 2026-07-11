@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS user_settings(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL UNIQUE,
+    theme ENUM('LIGHT', 'DARK') NOT NULL DEFAULT 'LIGHT',
+    auto_lock_minutes INT NOT NULL DEFAULT 5,
+    password_generator_length INT NOT NULL DEFAULT 16,
+    require_master_password BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_user_settings_user
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE
+    );
