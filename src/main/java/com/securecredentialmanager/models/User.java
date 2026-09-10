@@ -15,22 +15,19 @@ public class User {
     private LocalDateTime updatedAt;
 
     public User(int id, String username, String email, String passwordHash, String accountStatus, int failedLoginAttempts,
-    LocalDateTime lastLogin, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        Id = id;
-        Username = username;
-        Email = email;
-        PasswordHash = passwordHash;
-        accountStatus = accountStatus;
-        failedLoginAttempts = failedLoginAttempts;
-        lastLogin = lastLogin;
-        createdAt = createdAt;
-        updatedAt = updatedAt;
+                LocalDateTime lastLogin, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.Id = id;
+        this.Username = username;
+        this.Email = email;
+        this.PasswordHash = passwordHash;
+        this.accountStatus = accountStatus;
+        this.failedLoginAttempts = failedLoginAttempts;
+        this.lastLogin = lastLogin;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public User(String username, String email, String passwordHash) {
-        Username = username;
-        Email = email;
-        PasswordHash = passwordHash;
+    public User() {
     }
 
     public int getId() {

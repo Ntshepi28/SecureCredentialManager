@@ -15,7 +15,6 @@ public class UserRepository {
 
     // Save user to database
     public boolean saveUser(User user) {
-
         String sql = """
                 INSERT INTO users
                 (username, email, password_hash, account_status, failed_login_attempts)
@@ -23,7 +22,6 @@ public class UserRepository {
                 """;
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getEmail());
             statement.setString(3, user.getPasswordHash());
@@ -31,41 +29,63 @@ public class UserRepository {
             statement.setInt(5, user.getFailedLoginAttempts());
 
             return statement.executeUpdate() > 0;
-
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    // Find user by username
     public User findByUsername(String username) {
-
         String sql = "SELECT * FROM users WHERE username = ?";
+        return executeSingleUserQuery(sql, username);
+    }
+
+    public User findByEmail(String email) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        return executeSingleUserQuery(sql, email);
+    }
+
+    public boolean updateLoginSecurity(String username, int failedAttempts, String status) {
+        String sql = "UPDATE users SET failed_login_attempts = ?, account_status = ? WHERE username = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, failedAttempts);
+            statement.setString(2, status);
+            statement.setString(3, username);
 
+            return statement.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteByUsername(String username) {
+        String sql = "DELETE FROM users WHERE username = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, username);
+            return statement.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
+
+    private User executeSingleUserQuery(String sql, String parameter) {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, parameter);
             ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
-
                 Timestamp lastLoginTimestamp = rs.getTimestamp("last_login");
                 Timestamp createdAtTimestamp = rs.getTimestamp("created_at");
                 Timestamp updatedAtTimestamp = rs.getTimestamp("updated_at");
 
-                LocalDateTime lastLogin = lastLoginTimestamp != null
-                        ? lastLoginTimestamp.toLocalDateTime()
-                        : null;
-
-                LocalDateTime createdAt = createdAtTimestamp != null
-                        ? createdAtTimestamp.toLocalDateTime()
-                        : null;
-
-                LocalDateTime updatedAt = updatedAtTimestamp != null
-                        ? updatedAtTimestamp.toLocalDateTime()
-                        : null;
+                LocalDateTime lastLogin = lastLoginTimestamp != null ? lastLoginTimestamp.toLocalDateTime() : null;
+                LocalDateTime createdAt = createdAtTimestamp != null ? createdAtTimestamp.toLocalDateTime() : null;
+                LocalDateTime updatedAt = updatedAtTimestamp != null ? updatedAtTimestamp.toLocalDateTime() : null;
 
                 return new User(
                         rs.getInt("id"),
@@ -79,11 +99,9 @@ public class UserRepository {
                         updatedAt
                 );
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return null;
     }
 }
