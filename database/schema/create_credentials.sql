@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS credentials
 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    category_id BIGINT,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    category_id INT,
     service_name VARCHAR(100) NOT NULL,
     website VARCHAR(255),
     login_username VARCHAR(100) NOT NULL,
