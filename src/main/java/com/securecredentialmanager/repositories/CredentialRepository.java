@@ -22,10 +22,10 @@ public class CredentialRepository {
 
             statement.setInt(1, credential.getCategoryId());
 
-            if (credential.getCategoryId() != null){
+            if (credential.getCategoryId() != null) {
                 statement.setInt(2, credential.getCategoryId());
             } else {
-                statement.setNull(2, Types.INTEGER);
+                statement.setNull(2, java.sql.Types.INTEGER);
             }
 
             statement.setString(3, credential.getServiceName());
@@ -93,10 +93,39 @@ public class CredentialRepository {
 
              statement.setInt(1, id);
 
-             return statement.executeUpdate();
+             return statement.executeUpdate() > 0;
          } catch (Exception e) {
              e.printStackTrace();
              return false;
          }
+    }
+
+    public Credential mapCredential(ResultSet resultSet) throws Exception{
+
+        Timestamp createdAtTimestamp = resultSet.getTimestamp("created_at");
+        Timestamp updatedAtTimestamp = resultSet.getTimestamp("updated_at");
+
+        LocalDateTime createdAt = createdAtTimestamp != null
+                ? createdAtTimestamp.toLocalDateTime()
+                : null;
+
+        LocalDateTime updatedAt = updatedAtTimestamp != null
+                ? updatedAtTimestamp.toLocalDateTime()
+                : null;
+
+        Integer categoryId = resultSet.getObject("category_id", Integer.class);
+
+        return new Credential(
+                resultSet.getInt("id"),
+                resultSet.getInt("user_id"),
+                categoryId,
+                resultSet.getString("service_name"),
+                resultSet.getString("website"),
+                resultSet.getString("login_username"),
+                resultSet.getString("encrypted_password"),
+                resultSet.getString("notes"),
+                createdAt,
+                updatedAt
+        );
     }
 }

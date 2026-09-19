@@ -6,7 +6,7 @@ public class Credential {
 
     private int id;
     private int userId;
-    private int categoryId;
+    private Integer categoryId;
     private String serviceName;
     private String website;
     private String loginUsername;
@@ -18,7 +18,7 @@ public class Credential {
     public Credential() {
     }
 
-    public Credential(int id, int userId, int categoryId,
+    public Credential(int id, int userId, Integer categoryId,
                       String serviceName, String website,
                       String loginUsername, String encryptedPassword,
                       String notes, LocalDateTime createdAt,
@@ -52,11 +52,11 @@ public class Credential {
         this.userId = userId;
     }
 
-    public int getCategoryId() {
+    public Integer getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
 
