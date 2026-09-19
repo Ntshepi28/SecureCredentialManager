@@ -85,4 +85,18 @@ public class CredentialRepository {
 
         return null;
     }
+
+    public boolean deleteCredentials(int id){
+         String sql = "DELETE FROM credentials WHERE id = ?";
+
+         try (PreparedStatement statement = connection.prepareStatement(sql)){
+
+             statement.setInt(1, id);
+
+             return statement.executeUpdate();
+         } catch (Exception e) {
+             e.printStackTrace();
+             return false;
+         }
+    }
 }
