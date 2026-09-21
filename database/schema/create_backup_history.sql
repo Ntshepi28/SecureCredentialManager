@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS backup_history(
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
+    user_id INT NOT NULL,
     backup_name VARCHAR(255) NOT NULL,
     backup_path VARCHAR(500) NOT NULL,
-    backup_size BIGINT,
+    backup_size INTEGER,
     status ENUM(
                    'SUCCESS',
                    'FAILED'

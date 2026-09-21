@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS password_history (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    credential_id BIGINT NOT NULL,
+    credential_id INT NOT NULL,
     encrypted_password TEXT NOT NULL,
     changed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

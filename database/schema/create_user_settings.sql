@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS user_settings(
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL UNIQUE,
+    user_id INT NOT NULL UNIQUE,
     theme ENUM('LIGHT', 'DARK') NOT NULL DEFAULT 'LIGHT',
     auto_lock_minutes INT NOT NULL DEFAULT 5,
     password_generator_length INT NOT NULL DEFAULT 16,

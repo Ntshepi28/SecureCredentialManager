@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS sessions(
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
+    user_id INT NOT NULL,
     session_token VARCHAR(255) NOT NULL UNIQUE,
     device_name VARCHAR(255),
     ip_address VARCHAR(45),

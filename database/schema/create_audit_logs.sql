@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS audit_logs(
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
+    user_id INT NOT NULL,
     action VARCHAR(100) NOT NULL,
     description TEXT,
     ip_address VARCHAR(45),
