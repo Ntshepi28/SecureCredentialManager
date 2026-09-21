@@ -65,6 +65,13 @@ public class AuthenticationService {
         userRepository.updateLoginSecurity(username, 0, "ACTIVE");
 
         return user;
+    }
 
+    public boolean usernameExists(String username){
+        return userRepository.findByUsername(username) != null;
+    }
+
+    public boolean emailExists(String email){
+        return userRepository.findByUsername(email) != null;
     }
 }
