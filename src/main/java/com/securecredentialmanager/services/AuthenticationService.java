@@ -39,4 +39,32 @@ public class AuthenticationService {
 
         return userRepository.saveUser(user);
     }
+
+    public User login(String username, String password){
+        User user = userRepository.findByUsername(username);
+        if (user == null){
+            return null;
+        }
+
+        if (!"ACTIVE".equals(user.getAccountStatus())){
+            return null;
+        }
+
+        if (!BCrypt.checkpw(password, user.getPasswordHash())){
+            int failedAttempts = user.getFailedLoginAttempts() + 1;
+
+            if (failedAttempts >= MAX_LOGIN_ATTEMPTS){
+                userRepository.updateLoginSecurity(username, failedAttempts, "LOCKED");
+            } else {
+                userRepository.updateLoginSecurity(username, failedAttempts, "ACTIVE");
+            }
+
+            return null;
+        }
+
+        userRepository.updateLoginSecurity(username, 0, "ACTIVE");
+
+        return user;
+
+    }
 }
