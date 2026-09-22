@@ -142,7 +142,7 @@ public class DashboardService {
     }
 
     public String getPasswordStrength(String password){
-        return passwordStrengthService.chekStrength(password);
+        return passwordStrengthService.checkStrength(password);
     }
 
     public int getPasswordStrengthScore(String password){
