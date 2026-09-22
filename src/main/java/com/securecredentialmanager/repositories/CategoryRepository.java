@@ -3,10 +3,7 @@ package com.securecredentialmanager.repositories;
 import com.securecredentialmanager.database.DatabaseConnection;
 import com.securecredentialmanager.models.Category;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDateTime;
 
 public class CategoryRepository {
@@ -29,6 +26,24 @@ public class CategoryRepository {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public int countByUserId(int userId){
+        String sql = "SELECT COUNT(*) FROM categories WHERE user_id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setInt(1, userId);
+
+            try (ResultSet resultSet = statement.executeQuery()){
+                if (resultSet.next()){
+                    return resultSet.getInt(1);
+                }
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 
     public Category findByName(long userId, String name){
