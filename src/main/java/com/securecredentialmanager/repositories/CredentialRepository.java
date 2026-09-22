@@ -41,6 +41,24 @@ public class CredentialRepository {
         }
     }
 
+    public int countByUserId(int userId){
+        String sql = "SELECT COUNT(*) FROM credentials WHERE user_id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setInt(1, userId);
+
+            try (ResultSet resultSet = statement.executeQuery()){
+                if (resultSet.next()){
+                    return resultSet.getInt(1);
+                }
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
     public Credential findById(int id){
         String sql = "SELECT * FROM credentials WHERE id = ?";
 
