@@ -9,6 +9,7 @@ import com.securecredentialmanager.repositories.BackupHistoryRepository;
 import com.securecredentialmanager.repositories.CredentialRepository;
 import com.securecredentialmanager.repositories.UserRepository;
 import com.securecredentialmanager.repositories.UserSettingsRepository;
+import com.sun.jdi.event.StepEvent;
 
 public class DashboardService {
 
@@ -26,5 +27,30 @@ public class DashboardService {
         this.backupHistoryRepository = new BackupHistoryRepository();
         this.userSettingsRepository = new UserSettingsRepository();
         this.passwordStrengthService = new PasswordStrengthService();
+    }
+
+    public User getUser(String username){
+        if (username == null || username.isBlank()){
+            return null;
+        }
+
+        return userRepository.findByUsername(username);
+    }
+
+    public String getWelcomeMessage(String username){
+        User user = getUser(username);
+
+        if (user == null){
+            return null;
+        }
+
+        return "Welcome, " + user.getUsername();
+    }
+
+    public boolean isAccountActive(String username){
+        User user = getUser(username);
+
+        return user != null
+                && "ACTIVE".equals(user.getAccountStatus());
     }
 }
