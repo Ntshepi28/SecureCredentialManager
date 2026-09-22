@@ -148,4 +148,55 @@ public class DashboardService {
     public int getPasswordStrengthScore(String password){
         return passwordStrengthService.calculateScore(password);
     }
+
+    public BackupHistory getLatestBackup(int userId){
+        if (userId <= 0){
+            return null;
+        }
+
+        return backupHistoryRepository.findLatestByUserId(userId);
+    }
+
+    public String getBackupStatus(int userId){
+        BackupHistory backup = getLatestBackup(userId);
+
+        if (backup == null){
+            return "NO BACKUP";
+        }
+
+        return backup.getStatus();
+    }
+
+    public String getBackupPath(int userId){
+
+        BackupHistory backup = getLatestBackup(userId);
+
+        if (backup == null){
+            return  null;
+        }
+
+        return backup.getBackupPath();
+    }
+
+    public int getBackupSize(int userId){
+        BackupHistory backup = getLatestBackup(userId);
+
+        if (backup == null){
+            return  0;
+        }
+
+        return backup.getBackupSize();
+    }
+
+    public String getBackupInformation(int userId){
+        BackupHistory backup = getLatestBackup(userId);
+
+        if (backup == null){
+            return  "No backup available";
+        }
+
+        return backup.getBackupName()
+                + " _ "
+                + backup.getStatus();
+    }
 }
