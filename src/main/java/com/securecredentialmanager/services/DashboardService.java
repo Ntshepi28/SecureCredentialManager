@@ -199,4 +199,27 @@ public class DashboardService {
                 + " _ "
                 + backup.getStatus();
     }
+
+    public UserSettings getUserSettings(int userId){
+        if (userId <= 0){
+            return null;
+        }
+
+        return userSettingsRepository.findByUserId(userId);
+    }
+
+    public String getDashboardSummary(User user){
+
+        if (user == null){
+            return "No dashboard information available";
+        }
+
+        int credentials = getCredentialCount(user.getId());
+        int categories = getCategoryCount(user.getId());
+        String security = getSecurityStatus(user);
+
+        return "Credentials: " + credentials
+                + " | Categories: " + categories
+                + " | Security: " + security;
+    }
 }
