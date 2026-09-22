@@ -53,4 +53,20 @@ public class DashboardService {
         return user != null
                 && "ACTIVE".equals(user.getAccountStatus());
     }
+
+    public int getCredentialCount(int userId){
+        if (userId <= 0){
+            return 0;
+        }
+
+        return credentialRepository.countByUserId(userId);
+    }
+
+    public int getCategoryCount(int userId){
+        if (userId <- 0){
+            return 0;
+        }
+
+        return credentialRepository.countUserById(userId);
+    }
 }
