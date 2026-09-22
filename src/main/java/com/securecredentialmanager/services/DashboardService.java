@@ -68,4 +68,38 @@ public class DashboardService {
 
         return categoryRepository.countByUserId(userId);
     }
+
+    public AuditLogs getRecentActivity(int userId){
+        if (userId <= 0){
+            return null;
+        }
+
+        return auditLogsRepository.findLatestByUserId(userId);
+    }
+
+    public String getRecentActivityDescription(int userId){
+
+        AuditLogs activity = getRecentActivity(userId);
+
+        if (activity == null){
+            return "No recent activity";
+        }
+
+        if (activity.getDescription() == null
+               || activity.getDescription().isBlank()){
+            return activity.getAction();
+        }
+
+        return activity.getDescription();
+    }
+
+    public String getRecentActivityAction(int userId){
+        AuditLogs activity = getRecentActivity(userId);
+
+        if (activity == null){
+            return "NONE";
+        }
+
+        return activity.getAction();
+    }
 }
