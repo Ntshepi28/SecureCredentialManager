@@ -102,4 +102,25 @@ public class DashboardService {
 
         return activity.getAction();
     }
+
+    public String getSecurityStatus(User user){
+        if (user == null){
+            return "UNKNOWN";
+        }
+
+        if ("LOCKED".equals(user.getAccountStatus())){
+            return "ACCOUNT LOCKED";
+        }
+
+        if ("DISABLED".equals(user.getAccountStatus())){
+            return "ACCOUNT DISABLED";
+        }
+
+        if (user.getFailedLoginAttempts() > 0){
+            return "ATTENTION";
+        }
+
+        return "SECURE";
+    }
+
 }
