@@ -7,6 +7,8 @@ import com.securecredentialmanager.models.UserSettings;
 import com.securecredentialmanager.repositories.*;
 import com.sun.jdi.event.StepEvent;
 
+import javax.print.DocFlavor;
+
 public class DashboardService {
 
     private final UserRepository userRepository;
@@ -123,4 +125,19 @@ public class DashboardService {
         return "SECURE";
     }
 
+    public int getFailedLoginAttempts(User user){
+        if (user == null){
+            return 0;
+        }
+
+        return user.getFailedLoginAttempts();
+    }
+
+    public String getAccountStatus(User user){
+        if (user == null){
+            return "UNKNOWN";
+        }
+
+        return user.getAccountStatus();
+    }
 }
