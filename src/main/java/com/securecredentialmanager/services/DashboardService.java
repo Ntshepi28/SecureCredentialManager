@@ -140,4 +140,12 @@ public class DashboardService {
 
         return user.getAccountStatus();
     }
+
+    public String getPasswordStrength(String password){
+        return passwordStrengthService.chekStrength(password);
+    }
+
+    public int getPasswordStrengthScore(String password){
+        return passwordStrengthService.calculateScore(password);
+    }
 }
