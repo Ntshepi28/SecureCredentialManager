@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS categories (
     id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
+    user_id INT NOT NULL,
     name VARCHAR(255),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

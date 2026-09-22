@@ -90,7 +90,7 @@ public class CategoryRepository {
 
         return new Category(
                 resultSet.getLong("id"),
-                resultSet.getLong("user_id"),
+                resultSet.getInt("user_id"),
                 resultSet.getString("name"),
                 createdAt
         );

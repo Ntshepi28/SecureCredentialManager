@@ -4,17 +4,14 @@ import com.securecredentialmanager.models.AuditLogs;
 import com.securecredentialmanager.models.BackupHistory;
 import com.securecredentialmanager.models.User;
 import com.securecredentialmanager.models.UserSettings;
-import com.securecredentialmanager.repositories.AuditLogsRepository;
-import com.securecredentialmanager.repositories.BackupHistoryRepository;
-import com.securecredentialmanager.repositories.CredentialRepository;
-import com.securecredentialmanager.repositories.UserRepository;
-import com.securecredentialmanager.repositories.UserSettingsRepository;
+import com.securecredentialmanager.repositories.*;
 import com.sun.jdi.event.StepEvent;
 
 public class DashboardService {
 
     private final UserRepository userRepository;
     private final CredentialRepository credentialRepository;
+    private final CategoryRepository categoryRepository;
     private final AuditLogsRepository auditLogsRepository;
     private final BackupHistoryRepository backupHistoryRepository;
     private final UserSettingsRepository userSettingsRepository;
@@ -23,6 +20,7 @@ public class DashboardService {
     public DashboardService(){
         this.userRepository = new UserRepository();
         this.credentialRepository = new CredentialRepository();
+        this.categoryRepository = new CategoryRepository();
         this.auditLogsRepository = new AuditLogsRepository();
         this.backupHistoryRepository = new BackupHistoryRepository();
         this.userSettingsRepository = new UserSettingsRepository();
@@ -62,11 +60,12 @@ public class DashboardService {
         return credentialRepository.countByUserId(userId);
     }
 
-    public int getCategoryCount(int userId){
-        if (userId <- 0){
+    public int getCategoryCount(int userId) {
+
+        if (userId <= 0) {
             return 0;
         }
 
-        return credentialRepository.countUserById(userId);
+        return categoryRepository.countByUserId(userId);
     }
 }

@@ -5,14 +5,14 @@ import java.time.LocalDateTime;
 public class Category {
 
     private long id;
-    private long userId;
+    private int userId;
     private String name;
     private LocalDateTime createdAt;
 
     public Category() {
     }
 
-    public Category(long id, long userId, String name, LocalDateTime createdAt) {
+    public Category(long id, int userId, String name, LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
         this.name = name;
@@ -27,11 +27,11 @@ public class Category {
         this.id = id;
     }
 
-    public long getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
