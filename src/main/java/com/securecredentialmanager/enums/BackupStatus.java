@@ -1,4 +1,12 @@
 package com.securecredentialmanager.enums;
 
-public class BackupStatus {
+public enum BackupStatus {
+
+    SUCCESS,
+    FAILED;
+
+    @Override
+    public String toString(){
+        return name();
+    }
 }

@@ -1,4 +1,12 @@
 package com.securecredentialmanager.enums;
 
-public class Theme {
+public enum Theme {
+
+    LIGHT,
+    DARK;
+
+    @Override
+    public String toString(){
+        return name();
+    }
 }
