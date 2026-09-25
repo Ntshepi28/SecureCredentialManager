@@ -1,9 +1,7 @@
 package com.securecredentialmanager.ui;
 
 import com.securecredentialmanager.controllers.CredentialController;
-import com.securecredentialmanager.models.Credential;
 import com.securecredentialmanager.models.User;
-import com.securecredentialmanager.services.EncryptionService;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -17,6 +15,13 @@ public class CredentialView {
 
     private final BorderPane root;
 
+    private TextField serviceField;
+    private TextField websiteField;
+    private TextField usernameField;
+    private PasswordField passwordField;
+    private TextArea noteField;
+    private Label message;
+
     public CredentialView(
             ScreenManager screenManager,
             User user) {
@@ -24,42 +29,76 @@ public class CredentialView {
         this.screenManager = screenManager;
         this.currentUser = user;
 
-        this.credentialController =
-                new CredentialController();
+        this.credentialController = new CredentialController();
 
         root = new BorderPane();
 
         createView();
     }
 
-    public void createView(){
+    public void createView() {
         root.setPadding(new Insets(20));
 
         Label title = new Label("Credential Manager");
+        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
         VBox form = new VBox(10);
 
-        TextField serviceField = new TextField();
+        serviceField = new TextField();
         serviceField.setPromptText("Service name");
 
-        TextField websiteField = new TextField();
+        websiteField = new TextField();
         websiteField.setPromptText("Website");
 
-        TextField usernameField = new TextField();
+        usernameField = new TextField();
         usernameField.setPromptText("Login username");
 
-        PasswordField passwordField = new PasswordField();
+        passwordField = new PasswordField();
         passwordField.setPromptText("Password");
 
-        TextArea noteField = new TextArea();
+        noteField = new TextArea();
         noteField.setPromptText("Notes");
+        noteField.setPrefRowCount(3);
 
         Button saveButton = new Button("Save Credential");
         Button backButton = new Button("Back to dashboard");
 
-        Label message = new Label();
+        message = new Label();
 
-        saveButton.setOnAction(event -> {message.setText("Encryption configuration is required before saving credentials.");
+        saveButton.setOnAction(event -> {
+            String serviceName = serviceField.getText().trim();
+            String website = websiteField.getText().trim();
+            String username = usernameField.getText().trim();
+            String password = passwordField.getText();
+            String notes = noteField.getText().trim();
+
+            // Single definition of userId
+            int userId = (currentUser != null && currentUser.getId() > 0) ? currentUser.getId() : 1;
+
+            if (serviceName.isEmpty() || username.isEmpty() || password.isEmpty()) {
+                message.setText("Service name, username, and password are required.");
+                message.setStyle("-fx-text-fill: red;");
+                return;
+            }
+
+            boolean success = credentialController.saveCredential(
+                    userId,
+                    null, // categoryId
+                    serviceName,
+                    website,
+                    username,
+                    password,
+                    notes
+            );
+
+            if (success) {
+                message.setText("Credential saved successfully!");
+                message.setStyle("-fx-text-fill: green;");
+                clearFormFields();
+            } else {
+                message.setText("Failed to save credential. Please try again.");
+                message.setStyle("-fx-text-fill: red;");
+            }
         });
 
         backButton.setOnAction(event -> screenManager.showDashboard(currentUser));
@@ -75,7 +114,15 @@ public class CredentialView {
         root.setCenter(form);
     }
 
-    public Parent getView(){
+    private void clearFormFields() {
+        if (serviceField != null) serviceField.clear();
+        if (websiteField != null) websiteField.clear();
+        if (usernameField != null) usernameField.clear();
+        if (passwordField != null) passwordField.clear();
+        if (noteField != null) noteField.clear();
+    }
+
+    public Parent getView() {
         return root;
     }
 }

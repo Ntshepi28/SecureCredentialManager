@@ -5,151 +5,185 @@ import com.securecredentialmanager.models.User;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 
 public class DashboardView {
 
-
     private final ScreenManager screenManager;
     private final DashboardController dashboardController;
+    private final User currentUser;
 
-    private final BorderPane root;
-
-    public DashboardView(
-            ScreenManager screenManager,
-            User user) {
-
+    public DashboardView(ScreenManager screenManager, User currentUser) {
         this.screenManager = screenManager;
-
-        this.dashboardController =
-                new DashboardController();
-
-        this.dashboardController.setCurrentUser(user);
-
-        root = new BorderPane();
-
-        createView();
+        this.currentUser = currentUser;
+        this.dashboardController = new DashboardController();
+        this.dashboardController.setCurrentUser(currentUser);
     }
 
-    public void createView(){
+    public Parent getView() {
+        BorderPane root = new BorderPane();
         root.setPadding(new Insets(20));
 
-        VBox sidebar = createSidebar();
-        VBox dashboard = createDashboard();
+        // 1. Left Sidebar Navigation
+        root.setLeft(createSidebar());
 
-        root.setLeft(sidebar);
-        root.setCenter(dashboard);
+        // 2. Center Branding (Logo & Title) + Activity
+        root.setCenter(createCenterSection());
+
+        // 3. Right Stats / Metrics Column
+        root.setRight(createRightStatsSection());
+
+        return root;
     }
 
-    private VBox createSidebar(){
+    private VBox createSidebar() {
         VBox sidebar = new VBox(12);
-
-        sidebar.setPadding(new Insets(20));
+        sidebar.setPadding(new Insets(15));
         sidebar.setPrefWidth(200);
+        sidebar.setStyle("-fx-background-color: #f8fafc; -fx-background-radius: 8px; -fx-border-color: #e2e8f0; -fx-border-radius: 8px;");
 
-        Label title = new Label("SCM");
-        Label subtitle = new Label("Secure Credential Manager");
+        Label appHeader = new Label("SCM");
+        appHeader.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
 
-        Button dashboardButton = new Button("Dashboard");
-        Button credentialButton = new Button("Credentials");
-        Button categoriesButton = new Button("Categories");
-        Button securityButton = new Button("Security");
-        Button backupButton = new Button("Backups");
-        Button settingsButton = new Button("Settings");
-        Button logoutButton = new Button("Logout");
+        Button btnDashboard = new Button("Dashboard");
+        btnDashboard.setMaxWidth(Double.MAX_VALUE);
+        btnDashboard.setDisable(true); // Currently on Dashboard
 
-        dashboardButton.setMaxWidth(Double.MAX_VALUE);
-        credentialButton.setMaxWidth(Double.MAX_VALUE);
-        categoriesButton.setMaxWidth(Double.MAX_VALUE);
-        securityButton.setMaxWidth(Double.MAX_VALUE);
-        backupButton.setMaxWidth(Double.MAX_VALUE);
-        settingsButton.setMaxWidth(Double.MAX_VALUE);
-        logoutButton.setMaxWidth(Double.MAX_VALUE);
+        Button btnCredentials = new Button("Credentials");
+        btnCredentials.setMaxWidth(Double.MAX_VALUE);
+        btnCredentials.setOnAction(e -> screenManager.showCredential());
 
-        dashboardButton.setOnAction(event -> screenManager.showDashboard(
-                dashboardController.getCurrentUser()
-        ));
+        Button btnCategories = new Button("Categories");
+        btnCategories.setMaxWidth(Double.MAX_VALUE);
+        btnCategories.setOnAction(e -> screenManager.showCategory());
 
-        credentialButton.setOnAction(event -> screenManager.showCredential());
-        categoriesButton.setOnAction(event -> screenManager.showCategory());
-        securityButton.setOnAction(event -> screenManager.showSecurity());
-        backupButton.setOnAction(event -> screenManager.showBackup());
-        settingsButton.setOnAction(event -> screenManager.showSettings());
-        logoutButton.setOnAction(event -> screenManager.logout());
+        Button btnSecurity = new Button("Security");
+        btnSecurity.setMaxWidth(Double.MAX_VALUE);
+        btnSecurity.setOnAction(e -> screenManager.showSecurity());
+
+        Button btnBackups = new Button("Backups");
+        btnBackups.setMaxWidth(Double.MAX_VALUE);
+        btnBackups.setOnAction(e -> screenManager.showBackup());
+
+        Button btnSettings = new Button("Settings");
+        btnSettings.setMaxWidth(Double.MAX_VALUE);
+        btnSettings.setOnAction(e -> screenManager.showSettings());
 
         Region spacer = new Region();
-
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        sidebar.getChildren().addAll(title, subtitle, new Separator(),
-                dashboardButton, credentialButton, categoriesButton,
-                securityButton, backupButton, settingsButton,
-                spacer, logoutButton);
+        Button btnLogout = new Button("Logout");
+        btnLogout.setMaxWidth(Double.MAX_VALUE);
+        btnLogout.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;");
+        btnLogout.setOnAction(e -> screenManager.logout());
+
+        sidebar.getChildren().addAll(
+                appHeader,
+                btnDashboard,
+                btnCredentials,
+                btnCategories,
+                btnSecurity,
+                btnBackups,
+                btnSettings,
+                spacer,
+                btnLogout
+        );
 
         return sidebar;
     }
 
-    private VBox createDashboard(){
-        VBox dashboard = new VBox(20);
-        dashboard.setPadding(new Insets(20));
+    private VBox createCenterSection() {
+        VBox centerBox = new VBox(25);
+        centerBox.setPadding(new Insets(10, 30, 10, 30));
+        centerBox.setAlignment(Pos.CENTER);
 
-        Label welcome = new Label(dashboardController.getWelcomeMessage());
-        Label heading = new Label("Dashboard");
+        // Center Logo Branding Container
+        VBox brandingBox = new VBox();
+        brandingBox.setAlignment(Pos.CENTER);
 
-        GridPane cards = new GridPane();
-        cards.setHgap(15);
-        cards.setVgap(15);
+        try {
+            var imageStream = getClass().getResourceAsStream("/images/shield.png");
 
-        VBox credentialCard = createCard("Credentials", String.valueOf(dashboardController.
-                getCredentialCount()));
+            if (imageStream == null) {
+                imageStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("images/shield.png");
+            }
 
-        VBox categoryCard = createCard("Categories", String.valueOf(dashboardController.
-                getCategoryCount()));
+            if (imageStream != null) {
+                Image logoImage = new Image(imageStream);
+                ImageView imageView = new ImageView(logoImage);
 
-        VBox securityCard = createCard("Security Status", dashboardController.
-                getSecurityStatus());
+                // Scaled up for better visibility
+                imageView.setFitWidth(260);
+                imageView.setPreserveRatio(true);
+                imageView.setSmooth(true);
 
-        VBox backupCard = createCard("Latest Backup", dashboardController.getBackupStatus());
+                brandingBox.getChildren().add(imageView);
+            } else {
+                throw new Exception("Image asset shield.png was not found on the classpath!");
+            }
 
-        cards.add(credentialCard, 0, 0);
-        cards.add(categoryCard, 1, 1);
-        cards.add(securityCard, 0, 1);
-        cards.add(backupCard, 1, 1);
+        } catch (Exception e) {
+            System.err.println("Could not load branding image: " + e.getMessage());
 
-        VBox activityBox = new VBox(10);
-        activityBox.setPadding(new Insets(20));
-        activityBox.setBorder(new Border(new BorderStroke(Color.LIGHTGRAY, BorderStrokeStyle.SOLID,
-                new CornerRadii(5), BorderWidths.DEFAULT)));
+            Label fallbackLabel = new Label("Secure Credential Manager");
+            fallbackLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #ffffff;");
+            brandingBox.getChildren().add(fallbackLabel);
+        }
 
+        // Recent Activity Card
+        VBox activityCard = createCard("Recent Activity");
+        activityCard.setMaxWidth(500); // Keeps the activity card neatly sized
 
-        Label activityTitle = new Label("Recent Activity");
-        Label activity = new Label(dashboardController.getRecentActivityDescription());
+        Label activityLabel = new Label(dashboardController.getRecentActivityDescription());
+        activityLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #475569;");
+        activityCard.getChildren().add(activityLabel);
 
-        activityBox.getChildren().addAll(activityTitle, activity);
+        centerBox.getChildren().addAll(brandingBox, activityCard);
 
-        return dashboard;
+        return centerBox;
+    }
+    private VBox createRightStatsSection() {
+        VBox rightBox = new VBox(15);
+        rightBox.setPadding(new Insets(10));
+        rightBox.setPrefWidth(260);
+
+        // Credential Count Card
+        VBox cardCredentials = createCard("Credential Count");
+        Label lblCredCount = new Label(String.valueOf(dashboardController.getCredentialCount()));
+        lblCredCount.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2563eb;");
+        cardCredentials.getChildren().add(lblCredCount);
+
+        // Category Count Card
+        VBox cardCategories = createCard("Category Count");
+        Label lblCatCount = new Label(String.valueOf(dashboardController.getCategoryCount()));
+        lblCatCount.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #059669;");
+        cardCategories.getChildren().add(lblCatCount);
+
+        // Latest Backup Card
+        VBox cardBackup = createCard("Latest Backup");
+        Label lblBackupStatus = new Label(dashboardController.getBackupStatus());
+        lblBackupStatus.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b;");
+        cardBackup.getChildren().add(lblBackupStatus);
+
+        rightBox.getChildren().addAll(cardCredentials, cardCategories, cardBackup);
+
+        return rightBox;
     }
 
-    private VBox createCard(String title, String value){
-        VBox card = new VBox(10);
+    private VBox createCard(String title) {
+        VBox card = new VBox(8);
+        card.setPadding(new Insets(15));
+        card.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 8px; -fx-border-color: #cbd5e1; -fx-border-radius: 8px;");
 
-        card.setPadding(new Insets(20));
-        card.setPrefWidth(250);
-        card.setPrefHeight(130);
-        card.setAlignment(Pos.CENTER);
+        Label cardTitle = new Label(title);
+        cardTitle.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #334155;");
 
-        Label titleLabel = new Label(title);
-
-        Label valueLabel = new Label(value);
-
-        card.getChildren().addAll(titleLabel, valueLabel);
-
+        card.getChildren().add(cardTitle);
         return card;
-    }
-
-    public Parent getView(){
-        return root;
     }
 }

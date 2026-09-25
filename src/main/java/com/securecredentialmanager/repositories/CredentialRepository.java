@@ -20,7 +20,7 @@ public class CredentialRepository {
 
         try (PreparedStatement statement = connection.prepareStatement(sql)){
 
-            statement.setInt(1, credential.getCategoryId());
+            statement.setInt(1, credential.getUserId());
 
             if (credential.getCategoryId() != null) {
                 statement.setInt(2, credential.getCategoryId());
@@ -36,6 +36,7 @@ public class CredentialRepository {
 
             return statement.executeUpdate() > 0;
         } catch (Exception e){
+            System.err.println("Error saving credential to database: " + e.getMessage());
             e.printStackTrace();
             return false;
         }

@@ -17,6 +17,17 @@ public class EncryptionService {
     private final SecretKeySpec secretKey;
     private final SecureRandom secureRandom;
 
+    /**
+     * Default no-argument constructor.
+     * Checks for SCM_ENCRYPTION_KEY in environment variables; falls back to an exact 32-byte dev key if missing.
+     */
+    public EncryptionService() {
+        this(resolveSecretKey());
+    }
+
+    /**
+     * Parameterized constructor that takes an explicit key string.
+     */
     public EncryptionService(String secret) {
 
         if (secret == null || secret.isBlank()) {
@@ -38,6 +49,19 @@ public class EncryptionService {
 
         this.secretKey = new SecretKeySpec(key, "AES");
         this.secureRandom = new SecureRandom();
+    }
+
+    /**
+     * Helper method to resolve the secret key from environment variables or fallback.
+     */
+    private static String resolveSecretKey() {
+        String envKey = System.getenv("SCM_ENCRYPTION_KEY");
+        if (envKey == null || envKey.isBlank()) {
+            System.out.println("WARNING: SCM_ENCRYPTION_KEY missing. Using local dev fallback key.");
+            // Must be EXACTLY 32 characters (32 bytes for AES-256)
+            return "12345678901234567890123456789012";
+        }
+        return envKey;
     }
 
     // ==========================================
@@ -78,9 +102,7 @@ public class EncryptionService {
             /*
              * Store IV together with encrypted data.
              *
-             * Format:
-             *
-             * Base64(IV + encrypted data + authentication tag)
+             * Format: Base64(IV + encrypted data + authentication tag)
              */
 
             byte[] combined =

@@ -9,20 +9,19 @@ public class CredentialController {
     private final CredentialService credentialService;
     private EncryptionService encryptionService;
 
-    public CredentialController(){
+    public CredentialController() {
         this.credentialService = new CredentialService();
+        this.encryptionService = new EncryptionService();
     }
 
-    public void setEncryptionService(EncryptionService encryptionService){
+    public void setEncryptionService(EncryptionService encryptionService) {
         this.encryptionService = encryptionService;
     }
 
     public boolean saveCredential(Credential credential) {
-
         if (credential == null) {
             return false;
         }
-
         return credentialService.saveCredential(credential);
     }
 
@@ -33,62 +32,58 @@ public class CredentialController {
             String website,
             String loginUsername,
             String password,
-            String notes){
+            String notes) {
 
-        if (password == null || password.isBlank()){
+        if (password == null || password.isBlank()) {
+            System.err.println("Save failed: Password cannot be empty.");
             return false;
         }
 
-        if (encryptionService == null){
-            throw new IllegalStateException("EncryptionService has not been configured");
+        if (encryptionService == null) {
+            this.encryptionService = new EncryptionService();
         }
 
+        try {
+            // Encrypt using EncryptionService
+            String encryptedPassword = encryptionService.encrypt(password);
 
-        String encryptedPassword =
-                encryptionService.encrypt(password);
+            Credential credential = new Credential();
+            credential.setUserId(userId);
+            credential.setCategoryId(categoryId);
+            credential.setServiceName(serviceName);
+            credential.setWebsite(website);
+            credential.setLoginUsername(loginUsername);
+            credential.setEncryptedPassword(encryptedPassword);
+            credential.setNotes(notes);
 
-        Credential credential = new Credential();
-
-        credential.setUserId(userId);
-        credential.setCategoryId(categoryId);
-        credential.setServiceName(serviceName);
-        credential.setWebsite(website);
-        credential.setLoginUsername(loginUsername);
-        credential.setEncryptedPassword(encryptedPassword);
-        credential.setNotes(notes);
-
-        return credentialService.saveCredential(credential);
+            return credentialService.saveCredential(credential);
+        } catch (Exception e) {
+            System.err.println("Error while encrypting/saving credential: " + e.getMessage());
+            return false;
+        }
     }
 
     public Credential findCredential(long id) {
-
         return credentialService.findCredential(id);
     }
 
-    public Credential findByServiceName(
-            int userId,
-            String serviceName) {
-
-        return credentialService.findByServiceName(
-                userId,
-                serviceName
-        );
+    public Credential findByServiceName(int userId, String serviceName) {
+        return credentialService.findByServiceName(userId, serviceName);
     }
 
-    public String decryptPassword(String encryptedPassword){
-        if (encryptedPassword == null){
+    public String decryptPassword(String encryptedPassword) {
+        if (encryptedPassword == null) {
             return null;
         }
 
-        if (encryptionService == null){
-            throw new IllegalStateException("EncryptionService has not been configured.");
+        if (encryptionService == null) {
+            this.encryptionService = new EncryptionService();
         }
 
         return encryptionService.decrypt(encryptedPassword);
     }
 
     public boolean deleteCredential(long id) {
-
         return credentialService.deleteCredential(id);
     }
 }
