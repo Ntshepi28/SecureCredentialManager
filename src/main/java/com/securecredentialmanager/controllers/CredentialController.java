@@ -63,6 +63,10 @@ public class CredentialController {
         }
     }
 
+    public java.util.List<Credential> getCredentialsForUser(int userId) {
+        return credentialService.getCredentialsForUser(userId);
+    }
+
     public Credential findCredential(long id) {
         return credentialService.findCredential(id);
     }

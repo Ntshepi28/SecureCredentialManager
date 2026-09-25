@@ -70,6 +70,7 @@ com/securecredentialmanager/database/DatabaseConnection.class
 com/securecredentialmanager/validation/UserValidator.class
 com/securecredentialmanager/controllers/RegistrationController.class
 com/securecredentialmanager/enums/Theme.class
+com/securecredentialmanager/ui/CredentialView$1.class
 com/securecredentialmanager/services/CredentialService.class
 com/securecredentialmanager/managers/SettingsManager.class
 com/securecredentialmanager/repositories/UserSettingsRepository.class

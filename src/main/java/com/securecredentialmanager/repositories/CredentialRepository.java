@@ -10,7 +10,7 @@ public class CredentialRepository {
 
     private final Connection connection = DatabaseConnection.getConnection();
 
-    public boolean saveCredential(Credential credential){
+    public boolean saveCredential(Credential credential) {
         String sql = """
                 INSERT INTO credentials
                 (user_id, category_id, service_name, website,
@@ -18,7 +18,7 @@ public class CredentialRepository {
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)){
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, credential.getUserId());
 
@@ -35,7 +35,7 @@ public class CredentialRepository {
             statement.setString(7, credential.getNotes());
 
             return statement.executeUpdate() > 0;
-        } catch (Exception e){
+        } catch (Exception e) {
             System.err.println("Error saving credential to database: " + e.getMessage());
             e.printStackTrace();
             return false;
@@ -45,9 +45,7 @@ public class CredentialRepository {
     public java.util.List<Credential> getUserCredentials(int userId) {
         java.util.List<Credential> list = new java.util.ArrayList<>();
         String sql = """
-            SELECT id, user_id, category_id, service_name, website,
-                   login_username, encrypted_password, notes
-            FROM credentials
+            SELECT * FROM credentials
             WHERE user_id = ?
             ORDER BY service_name ASC
             """;
@@ -56,16 +54,8 @@ public class CredentialRepository {
             stmt.setInt(1, userId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Credential c = new Credential();
-                    c.setId(rs.getInt("credential_id"));
-                    c.setUserId(rs.getInt("user_id"));
-                    c.setCategoryId(rs.getObject("category_id") != null ? rs.getInt("category_id") : null);
-                    c.setServiceName(rs.getString("service_name"));
-                    c.setWebsite(rs.getString("website"));
-                    c.setLoginUsername(rs.getString("login_username"));
-                    c.setEncryptedPassword(rs.getString("encrypted_password"));
-                    c.setNotes(rs.getString("notes"));
-                    list.add(c);
+                    // Use mapCredential to map all fields safely including id, dates, etc.
+                    list.add(mapCredential(rs));
                 }
             }
         } catch (Exception e) {
@@ -75,60 +65,59 @@ public class CredentialRepository {
         return list;
     }
 
-    public int countByUserId(int userId){
+    public int countByUserId(int userId) {
         String sql = "SELECT COUNT(*) FROM credentials WHERE user_id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)){
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, userId);
 
-            try (ResultSet resultSet = statement.executeQuery()){
-                if (resultSet.next()){
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
                     return resultSet.getInt(1);
                 }
             }
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return 0;
     }
 
-    public Credential findById(int id){
+    public Credential findById(int id) {
         String sql = "SELECT * FROM credentials WHERE id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)){
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
 
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()){
-                return mapCredential(resultSet);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return mapCredential(resultSet);
+                }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return  null;
+        return null;
     }
 
-    public Credential findByServiceName(int userId, String serviceName){
+    public Credential findByServiceName(int userId, String serviceName) {
 
         String sql = """
                 SELECT * FROM credentials
                 WHERE user_id = ? AND service_name = ?
                 """;
 
-
-        try (PreparedStatement statement = connection.prepareStatement(sql)){
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, userId);
             statement.setString(2, serviceName);
 
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()){
-                return mapCredential(resultSet);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return mapCredential(resultSet);
+                }
             }
 
         } catch (Exception e) {
@@ -138,21 +127,21 @@ public class CredentialRepository {
         return null;
     }
 
-    public boolean deleteCredentials(int id){
-         String sql = "DELETE FROM credentials WHERE id = ?";
+    public boolean deleteCredentials(int id) {
+        String sql = "DELETE FROM credentials WHERE id = ?";
 
-         try (PreparedStatement statement = connection.prepareStatement(sql)){
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-             statement.setInt(1, id);
+            statement.setInt(1, id);
 
-             return statement.executeUpdate() > 0;
-         } catch (Exception e) {
-             e.printStackTrace();
-             return false;
-         }
+            return statement.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    public Credential mapCredential(ResultSet resultSet) throws Exception{
+    public Credential mapCredential(ResultSet resultSet) throws Exception {
 
         Timestamp createdAtTimestamp = resultSet.getTimestamp("created_at");
         Timestamp updatedAtTimestamp = resultSet.getTimestamp("updated_at");
