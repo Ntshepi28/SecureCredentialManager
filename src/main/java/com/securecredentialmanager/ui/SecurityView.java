@@ -45,23 +45,28 @@ public class SecurityView {
 
         checkButton.setOnAction(event -> {
             String password = passwordField.getText();
-            String result = securityController.checkPasswordStrength(password);
 
+            String result = securityController.checkPasswordStrength(password);
             int passwordScore = securityController.getPasswordStrengthScore(password);
 
             strength.setText("Strength: " + result);
-            strength.setText("Strength: " + passwordScore + " / 6");
+            score.setText("Score: " + passwordScore + " / 6");
         });
 
         Button backButton = new Button("Back to Dashboard");
         backButton.setOnAction(event -> screenManager.showDashboard(currentUser));
 
         content.getChildren().addAll(
-                title, activityTitle,
-                activity, new Separator(),
-                new Label("Password Strength Checker"), passwordField,
-                checkButton, strength,
-                score, backButton
+                title,
+                activityTitle,
+                activity,
+                new Separator(),
+                new Label("Password Strength Checker"),
+                passwordField,
+                checkButton,
+                strength,
+                score,
+                backButton
         );
 
         root.setCenter(content);
