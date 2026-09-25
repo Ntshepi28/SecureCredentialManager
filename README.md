@@ -1,61 +1,74 @@
-Secure Credential Manager
+#  Secure Credential Manager
 
-A lightweight, secure desktop credential management application built with JavaFX, JDBC, and a relational database (PostgreSQL / MySQL). Secure Credential Manager allows users to safely store encrypted passwords, organize credentials into categories, assess password strengths, generate cryptographically secure passwords, and track user actions through a comprehensive audit logging system.
-Key Features
+![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=java)
+![JavaFX](https://img.shields.io/badge/JavaFX-GUI-blue?style=for-the-badge&logo=openjdk)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791?style=for-the-badge&logo=postgresql)
+![Maven](https://img.shields.io/badge/Maven-Build-C71A36?style=for-the-badge&logo=apachemaven)
+![Security](https://img.shields.io/badge/Security-AES--GCM%20%7C%20BCrypt-green?style=for-the-badge)
 
-    Encrypted Password Storage: Sensitive credentials (passwords) are encrypted using AES-GCM prior to database insertion.
+A robust, lightweight desktop credential management application built with **JavaFX**, **JDBC**, and relational databases (**PostgreSQL / MySQL**). Secure Credential Manager empowers users to safely store encrypted credentials, organize accounts into custom categories, test password resilience, generate cryptographically secure passwords, and track account security through automated audit logging.
 
-    Credential Management (CRUD): Add, view, copy, and delete credentials seamlessly via an interactive JavaFX TableView.
+---
 
-    Category Management: Create, list, and delete custom categories (e.g., Work, Finance, Personal) to organize your credentials.
+##  Key Features
 
-    Security Center:
+###  Core Security & Cryptography
+* **AES-GCM Encryption:** Vault credentials (passwords) are encrypted using AES in Galois/Counter Mode before DB persistence.
+* **BCrypt Password Hashing:** User master passwords are salted and hashed using industry-standard BCrypt.
+* **Account Lockout Policy:** Protects accounts against brute-force attacks by locking access after **5 consecutive failed attempts**.
+* **Audit Logging:** Automatically tracks critical security events (`LOGIN_SUCCESS`, `LOGIN_FAILED`, `ACCOUNT_LOCKED`, `PASSWORD_GENERATED`, etc.) into an immutable database log.
 
-        Password Strength Checker: Analyzes user inputs and provides dynamic feedback and scoring (0−6).
+###  Credential & Category Management
+* **Interactive Dashboard:** Seamlessly create, view, copy, and delete vault entries through a real-time `TableView`.
+* **Category Organization:** Create custom categories (*Work*, *Finance*, *Personal*) and assign them to credentials using dynamic UI dropdowns.
+* **Clipboard Integration:** Securely copy decrypted credentials or newly generated passwords with a single click.
 
-        Secure Password Generator: Generates cryptographically strong, customizable-length passwords utilizing SecureRandom.
+###  Security Center
+* **Password Strength Evaluator:** Real-time scoring ($0-6$) and dynamic strength feedback on user passwords.
+* **Cryptographic Generator:** Configurable, multi-character generator powered by Java’s `SecureRandom` ($8-32$ characters).
 
-        Clipboard Integration: Easily copy generated or decrypted passwords with a single click.
+---
 
-    Authentication & Security:
+##  System Architecture
 
-        Password hashing powered by BCrypt.
+The project strictly enforces the **MVC (Model-View-Controller)** design pattern with dedicated service and repository layers:
 
-        Account Lockout Policy: Protects accounts by locking them after 5 consecutive failed login attempts.
+┌─────────────────────────────────────────────────────────┐
+│                      JavaFX Views                       │
+│    (CredentialView, CategoryView, SecurityView, etc.)   │
+└────────────────────────────┬────────────────────────────┘
+│
+▼
+┌─────────────────────────────────────────────────────────┐
+│                       Controllers                       │
+│ (CredentialController, CategoryController, Security...) │
+└────────────────────────────┬────────────────────────────┘
+│
+▼
+┌─────────────────────────────────────────────────────────┐
+│                        Services                         │
+│ (AuthenticationService, CategoryService, SecurityLog...)│
+└────────────────────────────┬────────────────────────────┘
+│
+▼
+┌─────────────────────────────────────────────────────────┐
+│                      Repositories                       │
+│(CredentialRepository, CategoryRepository, AuditLogs...) │
+└────────────────────────────┬────────────────────────────┘
+│
+▼
+┌─────────────────────────────────────────────────────────┐
+│                  Relational Database                    │
+│                 (PostgreSQL / MySQL)                    │
+└─────────────────────────────────────────────────────────┘
 
-    Audit Logging: Automatically records user activities (logins, failed attempts, account lockouts, password generation, category management) into a dedicated database table (audit_logs) powered by an AuditAction enum framework.
+---
 
-Architecture Overview
+## 🗄️ Database Schema
 
-The application follows a clean MVC (Model-View-Controller) pattern with a dedicated Service and Repository layer:
+Execute the SQL initialization script below to prepare your database environment:
 
-UI (JavaFX Views)
-  └── Controllers (CredentialController, CategoryController, SecurityController, etc.)
-       └── Services (AuthenticationService, CategoryService, PasswordGeneratorService, etc.)
-            └── Repositories (CredentialRepository, CategoryRepository, AuditLogsRepository, etc.)
-                 └── Database Connection (JDBC / PostgreSQL or MySQL)
-
-Tech Stack & Prerequisites
-
-    Language: Java 21+
-
-    UI Framework: JavaFX
-
-    Build Tool: Maven
-
-    Database: PostgreSQL / MySQL
-
-    Security & Libraries:
-
-        Java Cryptography Architecture (AES-GCM, SecureRandom)
-
-        jBCrypt (Password Hashing)
-
-Database Schema Setup
-
-Before running the application, ensure your target PostgreSQL/MySQL database is active and execute the schema initialization script below:
-SQL
-
+```sql
 -- Users Table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -100,32 +113,17 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-Getting Started
-1. Clone the Repository
-Bash
-
-git clone https://github.com/your-username/SecureCredentialManager.git
-cd SecureCredentialManager
-
-2. Configure Database Credentials
-
-Ensure your database connection details inside src/main/java/com/securecredentialmanager/database/DatabaseConnection.java match your local environment configuration (Database URL, Username, Password).
 3. Build & Run
 
-Compile the project and run the JavaFX application using Maven:
-Bash
-
+Execute the application via Maven:
 mvn clean compile javafx:run
 
-Project Structure
-
 src/main/java/com/securecredentialmanager/
-├── controllers/          # Handles UI events and delegates business operations
-├── database/             # Database connection setup
-├── enums/                # AuditAction enums for system event tracking
-├── models/               # Data Transfer Objects (User, Credential, Category, AuditLogs)
-├── repositories/         # Database persistence layer (JDBC Queries)
-├── services/             # Core business logic (Security, Encryption, Auth)
-└── ui/                   # JavaFX Views and Layout Managers
-
+├── controllers/       # Bridges JavaFX Views and Service business logic
+├── database/          # Database connection provider and configuration
+├── enums/             # Strongly-typed AuditAction enumeration definitions
+├── models/            # Entity models (User, Credential, Category, AuditLogs)
+├── repositories/      # JDBC DAO pattern for SQL persistence
+├── services/          # Core security, encryption, and authentication engines
+└── ui/                # JavaFX layout containers and views
 WTC-SQMBMM7G
