@@ -87,6 +87,13 @@ public class CredentialService {
         return credentialRepository.saveCredential(credential);
     }
 
+    public java.util.List<Credential> getCredentialsForUser(int userId) {
+        if (userId <= 0) {
+            return new java.util.ArrayList<>();
+        }
+        return credentialRepository.getUserCredentials(userId);
+    }
+
     public Credential findCredential(long id) {
         if (id <= 0) {
             return null;
