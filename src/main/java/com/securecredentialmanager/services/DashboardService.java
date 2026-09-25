@@ -167,6 +167,17 @@ public class DashboardService {
         return backup.getStatus();
     }
 
+    public String getBackupName(int userId) {
+
+        BackupHistory backup = getLatestBackup(userId);
+
+        if (backup == null) {
+            return "No backup available";
+        }
+
+        return backup.getBackupName();
+    }
+
     public String getBackupPath(int userId){
 
         BackupHistory backup = getLatestBackup(userId);
@@ -196,7 +207,7 @@ public class DashboardService {
         }
 
         return backup.getBackupName()
-                + " _ "
+                + " - "
                 + backup.getStatus();
     }
 

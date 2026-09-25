@@ -125,7 +125,7 @@ public class DashboardView {
 
 
         Label activityTitle = new Label("Recent Activity");
-        Label activity = new Label(dashboardController.getRecentActivityDescription);
+        Label activity = new Label(dashboardController.getRecentActivityDescription());
 
         activityBox.getChildren().addAll(activityTitle, activity);
 
