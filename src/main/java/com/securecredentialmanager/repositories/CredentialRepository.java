@@ -42,6 +42,39 @@ public class CredentialRepository {
         }
     }
 
+    public java.util.List<Credential> getUserCredentials(int userId) {
+        java.util.List<Credential> list = new java.util.ArrayList<>();
+        String sql = """
+            SELECT id, user_id, category_id, service_name, website,
+                   login_username, encrypted_password, notes
+            FROM credentials
+            WHERE user_id = ?
+            ORDER BY service_name ASC
+            """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Credential c = new Credential();
+                    c.setId(rs.getInt("credential_id"));
+                    c.setUserId(rs.getInt("user_id"));
+                    c.setCategoryId(rs.getObject("category_id") != null ? rs.getInt("category_id") : null);
+                    c.setServiceName(rs.getString("service_name"));
+                    c.setWebsite(rs.getString("website"));
+                    c.setLoginUsername(rs.getString("login_username"));
+                    c.setEncryptedPassword(rs.getString("encrypted_password"));
+                    c.setNotes(rs.getString("notes"));
+                    list.add(c);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error fetching user credentials: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public int countByUserId(int userId){
         String sql = "SELECT COUNT(*) FROM credentials WHERE user_id = ?";
 
